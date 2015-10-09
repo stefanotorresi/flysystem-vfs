@@ -78,6 +78,20 @@ class VfsAdapter extends Local
     /**
      * {@inheritdoc}
      */
+    public function deleteDir($dirname)
+    {
+        /**
+         * for some reason the vfs stream wrapper goes nuts
+         * with subsequent url_stat calls on directories without a trailing separator
+         */
+        $dirname = rtrim($dirname, $this->pathSeparator).$this->pathSeparator;
+
+        return parent::deleteDir($dirname);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPathPrefix()
     {
         return $this->wrapPath(parent::getPathPrefix());
