@@ -18,6 +18,8 @@ class VfsAdapter extends Local
      */
     public function __construct(FileSystem $vfs)
     {
+        $this->permissionMap = static::$permissions;
+
         $this->vfs = $vfs;
     }
 
@@ -71,6 +73,20 @@ class VfsAdapter extends Local
         }
 
         return compact('path', 'size', 'contents', 'mimetype');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteDir($dirname)
+    {
+        /**
+         * for some reason the vfs stream wrapper goes nuts
+         * with subsequent url_stat calls on directories without a trailing separator
+         */
+        $dirname = rtrim($dirname, $this->pathSeparator).$this->pathSeparator;
+
+        return parent::deleteDir($dirname);
     }
 
     /**
